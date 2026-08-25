@@ -2,7 +2,7 @@ Won Deals US vs P-1 =
 VAR MoisNum  = MAX ( 'Calendar'[Month num] )
 VAR TrimNum  = MAX ( 'Calendar'[Quarter No] )
 VAR SemNum   = MAX ( 'Calendar'[Semester No] )
-VAR AnneeNum = MAX ( 'Calendar'[Year Name] )
+VAR AnneeNum = VALUE ( MAX ( 'Calendar'[Year Name] ) )   -- toujours Integer, quel que soit le type source
 
 VAR previousValue =
     IF (
@@ -24,35 +24,35 @@ VAR previousValue =
                         [Won Deals USD],
                         REMOVEFILTERS ( 'Calendar' ),
                         'Calendar'[Month num] = mPrec,
-                        'Calendar'[Year Name] = yPrec
+                        'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
                     ),
 
             ISFILTERED ( 'Calendar'[Quarter & Year] ),
-                VAR qPrec = IF ( TrimNum = 1, 4, TrimNum - 1 )
-                VAR yPrec = IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
+                VAR qPrec  = IF ( TrimNum = 1, 4, TrimNum - 1 )
+                VAR yPrec2 = IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
                 RETURN
                     CALCULATE (
                         [Won Deals USD],
                         REMOVEFILTERS ( 'Calendar' ),
                         'Calendar'[Quarter No] = qPrec,
-                        'Calendar'[Year Name]  = yPrec
+                        'Calendar'[Year Name]  = FORMAT ( yPrec2, "0" )
                     ),
 
             ISFILTERED ( 'Calendar'[Semester Name] ),
-                VAR sPrec = IF ( SemNum = 1, 2, 1 )
-                VAR yPrec = IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
+                VAR sPrec  = IF ( SemNum = 1, 2, 1 )
+                VAR yPrec3 = IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
                 RETURN
                     CALCULATE (
                         [Won Deals USD],
                         REMOVEFILTERS ( 'Calendar' ),
                         'Calendar'[Semester No] = sPrec,
-                        'Calendar'[Year Name]   = yPrec
+                        'Calendar'[Year Name]   = FORMAT ( yPrec3, "0" )
                     ),
 
             CALCULATE (
                 [Won Deals USD],
                 REMOVEFILTERS ( 'Calendar' ),
-                'Calendar'[Year Name] = AnneeNum - 1
+                'Calendar'[Year Name] = FORMAT ( AnneeNum - 1, "0" )
             )
         )
     )
