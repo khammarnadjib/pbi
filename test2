@@ -1,11 +1,14 @@
 ```DAX
 Won Deals US vs P-1 =
 VAR MoisNum =
-    MAX ( 'Calendar'[Month num] )
+    VALUE ( MAX ( 'Calendar'[Month num] ) )
+
 VAR TrimNum =
-    MAX ( 'Calendar'[Quarter No] )
+    VALUE ( MAX ( 'Calendar'[Quarter No] ) )
+
 VAR SemNum =
-    MAX ( 'Calendar'[Semester No] )
+    VALUE ( MAX ( 'Calendar'[Semester No] ) )
+
 VAR AnneeNum =
     VALUE ( MAX ( 'Calendar'[Year Name] ) )
 
@@ -13,56 +16,78 @@ VAR previousValue =
     SWITCH (
         TRUE (),
 
-        -- Mois
+        -- =========================
+        -- MOIS
+        -- =========================
         ISFILTERED ( 'Calendar'[Month & Year] ),
+
             VAR mPrec =
                 IF ( MoisNum = 1, 12, MoisNum - 1 )
+
             VAR yPrec =
                 IF ( MoisNum = 1, AnneeNum - 1, AnneeNum )
+
             RETURN
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Month num] = mPrec,
+                    'Calendar'[Month num] = FORMAT ( mPrec, "0" ),
                     'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
                 ),
 
-        -- Trimestre
+        -- =========================
+        -- TRIMESTRE
+        -- =========================
         ISFILTERED ( 'Calendar'[Quarter & Year] ),
+
             VAR qPrec =
                 IF ( TrimNum = 1, 4, TrimNum - 1 )
+
             VAR yPrec =
                 IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
+
             RETURN
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Quarter No] = qPrec,
+                    'Calendar'[Quarter No] = FORMAT ( qPrec, "0" ),
                     'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
                 ),
 
-        -- Semestre
+        -- =========================
+        -- SEMESTRE
+        -- =========================
         ISFILTERED ( 'Calendar'[Semester Name] ),
+
             VAR sPrec =
                 IF ( SemNum = 1, 2, 1 )
+
             VAR yPrec =
                 IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
+
             RETURN
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Semester No] = sPrec,
+                    'Calendar'[Semester No] = FORMAT ( sPrec, "0" ),
                     'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
                 ),
 
-        -- Année
+        -- =========================
+        -- ANNÉE
+        -- =========================
         ISFILTERED ( 'Calendar'[Year Name] ),
+
             CALCULATE (
                 [Won Deals USD],
                 REMOVEFILTERS ( 'Calendar' ),
-                'Calendar'[Year Name] = FORMAT ( AnneeNum - 1, "0" )
+                'Calendar'[Year Name] =
+                    FORMAT ( AnneeNum - 1, "0" )
             ),
 
+        -- =========================
+        -- AUCUN FILTRE
+        -- =========================
         BLANK ()
     )
 
