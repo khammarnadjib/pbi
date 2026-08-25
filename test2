@@ -3,11 +3,11 @@ Won Deals US vs P-1 =
 VAR MoisNum =
     MAX ( 'Calendar'[Month num] )
 
-VAR TrimNum =
-    VALUE ( MAX ( 'Calendar'[Quarter No] ) )
+VAR TrimText =
+    MAX ( 'Calendar'[Quarter No] )
 
-VAR SemNum =
-    VALUE ( MAX ( 'Calendar'[Semester No] ) )
+VAR SemText =
+    MAX ( 'Calendar'[Semester No] )
 
 VAR AnneeNum =
     VALUE ( MAX ( 'Calendar'[Year Name] ) )
@@ -41,16 +41,26 @@ VAR previousValue =
         ISFILTERED ( 'Calendar'[Quarter & Year] ),
 
             VAR qPrec =
-                IF ( TrimNum = 1, 4, TrimNum - 1 )
+                SWITCH (
+                    TrimText,
+                    "1", "4",
+                    "2", "1",
+                    "3", "2",
+                    "4", "3"
+                )
 
             VAR yPrec2 =
-                IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
+                IF (
+                    TrimText = "1",
+                    AnneeNum - 1,
+                    AnneeNum
+                )
 
             RETURN
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Quarter No] = FORMAT ( qPrec, "0" ),
+                    'Calendar'[Quarter No] = qPrec,
                     'Calendar'[Year Name] = FORMAT ( yPrec2, "0" )
                 ),
 
@@ -60,16 +70,24 @@ VAR previousValue =
         ISFILTERED ( 'Calendar'[Semester Name] ),
 
             VAR sPrec =
-                IF ( SemNum = 1, 2, 1 )
+                SWITCH (
+                    SemText,
+                    "1", "2",
+                    "2", "1"
+                )
 
             VAR yPrec3 =
-                IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
+                IF (
+                    SemText = "1",
+                    AnneeNum - 1,
+                    AnneeNum
+                )
 
             RETURN
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Semester No] = FORMAT ( sPrec, "0" ),
+                    'Calendar'[Semester No] = sPrec,
                     'Calendar'[Year Name] = FORMAT ( yPrec3, "0" )
                 ),
 
@@ -85,9 +103,6 @@ VAR previousValue =
                     FORMAT ( AnneeNum - 1, "0" )
             ),
 
-        -- =========================
-        -- AUCUN FILTRE
-        -- =========================
         BLANK ()
     )
 
