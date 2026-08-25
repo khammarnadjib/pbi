@@ -1,3 +1,4 @@
+```DAX
 Won Deals US vs P-1 =
 VAR MoisNum =
     MAX ( 'Calendar'[Month num] )
@@ -62,7 +63,6 @@ VAR previousValue =
                 'Calendar'[Year Name] = FORMAT ( AnneeNum - 1, "0" )
             ),
 
-        -- Aucun filtre temporel explicite
         BLANK ()
     )
 
@@ -76,3 +76,4 @@ RETURN
             previousValue
         )
     )
+```
