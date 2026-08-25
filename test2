@@ -1,7 +1,7 @@
 ```DAX
 Won Deals US vs P-1 =
 VAR MoisNum =
-    VALUE ( MAX ( 'Calendar'[Month num] ) )
+    MAX ( 'Calendar'[Month num] )
 
 VAR TrimNum =
     VALUE ( MAX ( 'Calendar'[Quarter No] ) )
@@ -31,7 +31,7 @@ VAR previousValue =
                 CALCULATE (
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
-                    'Calendar'[Month num] = FORMAT ( mPrec, "0" ),
+                    'Calendar'[Month num] = mPrec,
                     'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
                 ),
 
@@ -43,7 +43,7 @@ VAR previousValue =
             VAR qPrec =
                 IF ( TrimNum = 1, 4, TrimNum - 1 )
 
-            VAR yPrec =
+            VAR yPrec2 =
                 IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
 
             RETURN
@@ -51,7 +51,7 @@ VAR previousValue =
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
                     'Calendar'[Quarter No] = FORMAT ( qPrec, "0" ),
-                    'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
+                    'Calendar'[Year Name] = FORMAT ( yPrec2, "0" )
                 ),
 
         -- =========================
@@ -62,7 +62,7 @@ VAR previousValue =
             VAR sPrec =
                 IF ( SemNum = 1, 2, 1 )
 
-            VAR yPrec =
+            VAR yPrec3 =
                 IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
 
             RETURN
@@ -70,7 +70,7 @@ VAR previousValue =
                     [Won Deals USD],
                     REMOVEFILTERS ( 'Calendar' ),
                     'Calendar'[Semester No] = FORMAT ( sPrec, "0" ),
-                    'Calendar'[Year Name] = FORMAT ( yPrec, "0" )
+                    'Calendar'[Year Name] = FORMAT ( yPrec3, "0" )
                 ),
 
         -- =========================
