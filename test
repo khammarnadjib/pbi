@@ -1,0 +1,55 @@
+Label vs P-1 = 
+VAR MoisNum  = MAX ( 'Calendar'[Month num] )
+VAR TrimNum  = MAX ( 'Calendar'[Quarter No] )
+VAR SemNum   = MAX ( 'Calendar'[Semester No] )
+VAR AnneeNum = VALUE ( MAX ( 'Calendar'[Year Name] ) )
+RETURN
+IF (
+    NOT (
+        ISFILTERED ( 'Calendar'[Month & Year] )
+        || ISFILTERED ( 'Calendar'[Quarter & Year] )
+        || ISFILTERED ( 'Calendar'[Semester Name] )
+        || ISFILTERED ( 'Calendar'[Year Name] )
+    ),
+    BLANK (),
+    "vs "
+        & IF (
+            HASONEVALUE ( 'Calendar'[Month & Year] ),
+            // ── MOIS ──
+            VAR MoisPrec  = IF ( MoisNum = 1, 12, MoisNum - 1 )
+            VAR AnneePrec = IF ( MoisNum = 1, AnneeNum - 1, AnneeNum )
+            VAR Cible     = FORMAT ( AnneePrec, "0000" ) & "-M-" & FORMAT ( MoisPrec, "00" )
+            RETURN
+                CALCULATE (
+                    MAX ( 'Calendar'[Month Short EN] ) & " " & MAX ( 'Calendar'[Year Name] ),
+                    ALL ( 'Calendar' ),
+                    'Calendar'[Month Name] = Cible
+                ),
+        IF (
+            HASONEVALUE ( 'Calendar'[Quarter & Year] ),
+            // ── TRIMESTRE ──
+            VAR TrimPrec  = IF ( TrimNum = 1, 4, TrimNum - 1 )
+            VAR AnneePrec = IF ( TrimNum = 1, AnneeNum - 1, AnneeNum )
+            VAR Cible     = FORMAT ( AnneePrec, "0000" ) & "-T-" & FORMAT ( TrimPrec, "00" )
+            RETURN
+                CALCULATE (
+                    MAX ( 'Calendar'[Quarter short] ) & " " & MAX ( 'Calendar'[Year Name] ),
+                    ALL ( 'Calendar' ),
+                    'Calendar'[Quarter Name] = Cible
+                ),
+        IF (
+            HASONEVALUE ( 'Calendar'[Semester Name] ),
+            // ── SEMESTRE ──
+            VAR SemPrec   = IF ( SemNum = 1, 2, 1 )
+            VAR AnneePrec = IF ( SemNum = 1, AnneeNum - 1, AnneeNum )
+            VAR Cible     = FORMAT ( AnneePrec, "0000" ) & "-S-" & FORMAT ( SemPrec, "00" )
+            RETURN
+                CALCULATE (
+                    MAX ( 'Calendar'[Semester num] ) & " " & MAX ( 'Calendar'[Year Name] ),
+                    ALL ( 'Calendar' ),
+                    'Calendar'[Semester Name] = Cible
+                ),
+        // ── ANNÉE (défaut) ──
+            FORMAT ( AnneeNum - 1, "0000" )
+        )))
+)
